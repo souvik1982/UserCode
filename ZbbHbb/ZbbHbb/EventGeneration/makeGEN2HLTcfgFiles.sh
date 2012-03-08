@@ -1,0 +1,10 @@
+cmsDriver.py HERWIGPP_POWHEG_H100_bbbar_Z_bbbar_7TeV_cfi.py -s GEN,SIM,DIGI,L1,DIGI2RAW,HLT --conditions FrontierConditions_GlobalTag,MC_42_V13::All --datatier 'GEN-SIM-RAW' --eventcontent RAWSIM -n 1000 --no_exec
+cmsDriver.py HERWIGPP_POWHEG_H110_bbbar_Z_bbbar_7TeV_cfi.py -s GEN,SIM,DIGI,L1,DIGI2RAW,HLT --conditions FrontierConditions_GlobalTag,MC_42_V13::All --datatier 'GEN-SIM-RAW' --eventcontent RAWSIM -n 1000 --no_exec
+cmsDriver.py HERWIGPP_POWHEG_H115_bbbar_Z_bbbar_7TeV_cfi.py -s GEN,SIM,DIGI,L1,DIGI2RAW,HLT --conditions FrontierConditions_GlobalTag,MC_42_V13::All --datatier 'GEN-SIM-RAW' --eventcontent RAWSIM -n 1000 --no_exec
+cmsDriver.py HERWIGPP_POWHEG_H120_bbbar_Z_bbbar_7TeV_cfi.py -s GEN,SIM,DIGI,L1,DIGI2RAW,HLT --conditions FrontierConditions_GlobalTag,MC_42_V13::All --datatier 'GEN-SIM-RAW' --eventcontent RAWSIM -n 1000 --no_exec
+cmsDriver.py HERWIGPP_POWHEG_H125_bbbar_Z_bbbar_7TeV_cfi.py -s GEN,SIM,DIGI,L1,DIGI2RAW,HLT --conditions FrontierConditions_GlobalTag,MC_42_V13::All --datatier 'GEN-SIM-RAW' --eventcontent RAWSIM -n 1000 --no_exec
+cmsDriver.py HERWIGPP_POWHEG_H130_bbbar_Z_bbbar_7TeV_cfi.py -s GEN,SIM,DIGI,L1,DIGI2RAW,HLT --conditions FrontierConditions_GlobalTag,MC_42_V13::All --datatier 'GEN-SIM-RAW' --eventcontent RAWSIM -n 1000 --no_exec
+cmsDriver.py HERWIGPP_POWHEG_H135_bbbar_Z_bbbar_7TeV_cfi.py -s GEN,SIM,DIGI,L1,DIGI2RAW,HLT --conditions FrontierConditions_GlobalTag,MC_42_V13::All --datatier 'GEN-SIM-RAW' --eventcontent RAWSIM -n 1000 --no_exec
+cmsDriver.py HERWIGPP_POWHEG_H140_bbbar_Z_bbbar_7TeV_cfi.py -s GEN,SIM,DIGI,L1,DIGI2RAW,HLT --conditions FrontierConditions_GlobalTag,MC_42_V13::All --datatier 'GEN-SIM-RAW' --eventcontent RAWSIM -n 1000 --no_exec
+cmsDriver.py HERWIGPP_POWHEG_H145_bbbar_Z_bbbar_7TeV_cfi.py -s GEN,SIM,DIGI,L1,DIGI2RAW,HLT --conditions FrontierConditions_GlobalTag,MC_42_V13::All --datatier 'GEN-SIM-RAW' --eventcontent RAWSIM -n 1000 --no_exec
+cmsDriver.py HERWIGPP_POWHEG_H150_bbbar_Z_bbbar_7TeV_cfi.py -s GEN,SIM,DIGI,L1,DIGI2RAW,HLT --conditions FrontierConditions_GlobalTag,MC_42_V13::All --datatier 'GEN-SIM-RAW' --eventcontent RAWSIM -n 1000 --no_exec

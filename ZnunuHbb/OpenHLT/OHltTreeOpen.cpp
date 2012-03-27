@@ -744,7 +744,7 @@ bool isDiCentralPFJetX_PFMHTXTrigger(TString triggerName, vector<double> &thresh
 // 2012-03-22 Souvik
 bool isDiCentralCaloJetA_CaloMETB_minDPhiC_DiCentralPFJetD_PFMHTE_Trigger(TString triggerName, vector<double> &thresholds)
 {
-  TString pattern="(OpenHLT_DiCentralCaloJet([0-9]+)_CaloMET([0-9]+)_minDPhi([0-9]+)_DiCentralPFJet([0-9]+)_PFMHT([0-9]+)$";
+  TString pattern="(OpenHLT_DiCentralCaloJet([0-9]+)_CaloMET([0-9]+)_minDPhi([0-9]+)_DiCentralPFJet([0-9]+)_PFMHT([0-9]+))$";
   TPRegexp matchThreshold(pattern);
   
   if (matchThreshold.MatchB(triggerName))
@@ -2354,6 +2354,9 @@ void OHltTree::CheckOpenHlt(
 	// Open a file where distributions will be stored
 	static int nNoFilter=0, nL1ETM36=0, nCaloMET80=0, nDiCentralJet20=0, nDiCentralPFJet30=0, nPFMHT80=0;
 	// Distribution histograms
+	static TH1F *h_recoPFJet1_pT=new TH1F("h_recoPFJet1_pT", "Reco PF Jet1 p_{T}; p_{T} (GeV)", 100, 0., 400.);
+	static TH1F *h_recoPFJet2_pT=new TH1F("h_recoPFJet2_pT", "Reco PF Jet2 p_{T}; p_{T} (GeV)", 100, 0., 400.);
+	static TH1F *h_recoPFMET=new TH1F("h_recoPFMET", "Reco PF MET; PF MET (GeV)", 100, 0., 200.);
 	static TH1F *h_L1ETM=new TH1F("h_L1ETM", "L1 ETM; L1 ETM (GeV)", 100, 0., 100.);
 	static TH1F *h_CaloMET=new TH1F("h_CaloMET", "HLT Calo MET; MET (GeV)", 100, 0., 200.);
 	static TH1F *h_CaloJet1_pT=new TH1F("h_CaloJet1_pT", "HLT Calo Jet 1 p_T; p_T (GeV)", 100, 0., 400.);
@@ -13422,6 +13425,13 @@ else if (triggerName.CompareTo("OpenHLT_Ele32_WP70_PFMT50_v1")  == 0)
     {
       if (prescaleResponse(menu, cfg, rcounter, it))
       {
+        // Michele's Basic Offline Cuts
+	h_recoPFJet1_pT->Fill(recopfJetpt[0]);
+	h_recoPFJet2_pT->Fill(recopfJetpt[1]);
+	h_recoPFMET->Fill(recoMetPF);
+	if (RecoNJetPassed(2, 20., 2.4) && recoMetPF>80.)
+	{
+      
         h_L1ETM->Fill(L1Met);
         if (L1Met>36. || L1Met>40.)
 	{
@@ -13465,6 +13475,8 @@ else if (triggerName.CompareTo("OpenHLT_Ele32_WP70_PFMT50_v1")  == 0)
 	  }
 	  
 	} // L1 Seed
+	
+	} // Michele's Basic Offline Cuts
       }
     }
   }
@@ -15754,6 +15766,9 @@ else if (triggerName.CompareTo("OpenHLT_Ele32_WP70_PFMT50_v1")  == 0)
     
     TFile *outFile=new TFile("HLTDistributions.root", "recreate");
     outFile->cd();
+    h_recoPFJet1_pT->Write();
+    h_recoPFJet2_pT->Write();
+    h_recoPFMET->Write();
     h_L1ETM->Write();
     h_CaloMET->Write();
     h_CaloJet1_pT->Write();
@@ -22825,6 +22840,17 @@ bool OHltTree::OpenHltNJetPassed(const int N, const double& pt, const double& et
   for (int i= 0; i<NohJetCorCal; ++i)
   {
     if (ohJetCorCalPt[i]>=pt && fabs(ohJetCorCalEta[i])<eta) Npass++;
+    if (Npass >= N) break;
+  }
+  return Npass >= N;
+}
+
+bool OHltTree::RecoNJetPassed(const int N, const double& pt, const double& eta)
+{
+  Int_t Npass= 0;
+  for (int i= 0; i<nrpj; ++i)
+  {
+    if (recopfJetpt[i]>=pt && fabs(recopfJeteta[i])<eta) Npass++;
     if (Npass >= N) break;
   }
   return Npass >= N;

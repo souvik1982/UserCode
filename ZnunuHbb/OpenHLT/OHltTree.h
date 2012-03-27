@@ -111,6 +111,7 @@ public:
    Float_t recoMetGen;
    Float_t recoMetGenPhi;
    Float_t recoMetGenSum;
+	 Float_t recoMetPF;
    Float_t recoHTCal;
    Float_t recoHTCalPhi;
    Float_t recoHTCalSum;
@@ -377,6 +378,10 @@ public:
    Float_t pfJetPt[5000]; //[NohPFJet] 
    Float_t pfJetEta[5000]; //[NohPFJet] 
    Float_t pfJetPhi[5000]; //[NohPFJet] 
+	 Int_t nrpj;
+	 Float_t recopfJetpt[5000]; //[nrpj]
+	 Float_t recopfJeteta[5000]; //[nrpj]
+	 Float_t recopfJetphi[5000]; //[nrpj]
    Int_t NMCpart;
    Int_t MCpid[1203000]; //[NMCpart]
    Int_t MCstatus[1203000]; //[NMCpart]
@@ -7998,6 +8003,7 @@ public:
    TBranch *b_recoMetGen; //!
    TBranch *b_recoMetGenPhi; //!
    TBranch *b_recoMetGenSum; //!
+	 TBranch *b_recoMetPF;
    TBranch *b_recoHTCal; //!
    TBranch *b_recoHTCalPhi; //!
    TBranch *b_recoHTCalSum; //!
@@ -8264,6 +8270,10 @@ public:
    TBranch *b_pfJetPt; //! 
    TBranch *b_pfJetEta; //! 
    TBranch *b_pfJetPhi; //! 
+	 TBranch *b_nrpj;
+	 TBranch *b_recopfJetpt;
+	 TBranch *b_recopfJeteta;
+	 TBranch *b_recopfJetphi;
    TBranch *b_NMCpart; //!
    TBranch *b_MCpid; //!
    TBranch *b_MCstatus; //!
@@ -16871,6 +16881,7 @@ public:
    double minDeltaPhiCaloMHTCaloJets();
    double returnPFMHT();
    bool OpenHltNJetPassed(const int N, const double& pt, const double& eta);
+	 bool RecoNJetPassed(const int N, const double& pt, const double& eta);
 
 private:
 
@@ -17446,6 +17457,7 @@ void OHltTree::Init(TTree *tree)
    fChain->SetBranchAddress("recoMetGen", &recoMetGen, &b_recoMetGen);
    fChain->SetBranchAddress("recoMetGenPhi", &recoMetGenPhi, &b_recoMetGenPhi);
    fChain->SetBranchAddress("recoMetGenSum", &recoMetGenSum, &b_recoMetGenSum);
+	 fChain->SetBranchAddress("recoMetPF", &recoMetPF, &b_recoMetPF);
    fChain->SetBranchAddress("recoHTCal", &recoHTCal, &b_recoHTCal);
    fChain->SetBranchAddress("recoHTCalPhi", &recoHTCalPhi, &b_recoHTCalPhi);
    fChain->SetBranchAddress("recoHTCalSum", &recoHTCalSum, &b_recoHTCalSum);
@@ -17713,6 +17725,10 @@ void OHltTree::Init(TTree *tree)
    fChain->SetBranchAddress("pfJetPt", pfJetPt, &b_pfJetPt);
    fChain->SetBranchAddress("pfJetEta", pfJetEta, &b_pfJetEta);
    fChain->SetBranchAddress("pfJetPhi", pfJetPhi, &b_pfJetPhi);
+	 fChain->SetBranchAddress("nrpj", &nrpj, &b_nrpj);
+	 fChain->SetBranchAddress("recopfJetpt", &recopfJetpt, &b_recopfJetpt);
+	 fChain->SetBranchAddress("recopfJeteta", &recopfJeteta, &b_recopfJeteta);
+	 fChain->SetBranchAddress("recopfJetphi", &recopfJetphi, &b_recopfJetphi);
    fChain->SetBranchAddress("NMCpart", &NMCpart, &b_NMCpart);
    fChain->SetBranchAddress("MCpid", MCpid, &b_MCpid);
    fChain->SetBranchAddress("MCstatus", MCstatus, &b_MCstatus);

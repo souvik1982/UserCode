@@ -741,27 +741,31 @@ bool isDiCentralPFJetX_PFMHTXTrigger(TString triggerName, vector<double> &thresh
     return false;
 }
 
-// 2012-01-22 Souvik
-bool isDiCentralPFJetX_PFMHTX_dPhiXTrigger(TString triggerName, vector<double> &thresholds)
+// 2012-03-22 Souvik
+bool isDiCentralCaloJetA_CaloMETB_minDPhiC_DiCentralPFJetD_PFMHTE_Trigger(TString triggerName, vector<double> &thresholds)
 {
-	TString pattern="(OpenHLT_DiCentralPFJet([0-9]+)_MHT([0-9]+)_dPhi([0-9]+))$";
-	TPRegexp matchThreshold(pattern);
-	
-	if (matchThreshold.MatchB(triggerName))
-	{
-		TObjArray *subStrL=TPRegexp(pattern).MatchS(triggerName);
-		double thresholdPFJet=(((TObjString *)subStrL->At(2))->GetString()).Atof();
-		double thresholdPFMHT=(((TObjString *)subStrL->At(3))->GetString()).Atof();
-		double thresholddPhi=(((TObjString *)subStrL->At(4))->GetString()).Atof();
-		thresholds.push_back(thresholdPFJet);
-		thresholds.push_back(thresholdPFMHT);
-		thresholds.push_back(thresholddPhi);
-		delete subStrL;
-		return true;
-	}
-	else return false;
-}									 
-														 
+  TString pattern="(OpenHLT_DiCentralCaloJet([0-9]+)_CaloMET([0-9]+)_minDPhi([0-9]+)_DiCentralPFJet([0-9]+)_PFMHT([0-9]+)$";
+  TPRegexp matchThreshold(pattern);
+  
+  if (matchThreshold.MatchB(triggerName))
+  {
+    TObjArray *subStrL=TPRegexp(pattern).MatchS(triggerName);
+    double thresholdCaloJet=(((TObjString *)subStrL->At(2))->GetString()).Atof();
+    double thresholdCaloMET=(((TObjString *)subStrL->At(3))->GetString()).Atof();
+    double thresholdMinDPhi=(((TObjString *)subStrL->At(4))->GetString()).Atof();
+    double thresholdPFJet=(((TObjString *)subStrL->At(5))->GetString()).Atof();
+    double thresholdPFMHT=(((TObjString *)subStrL->At(6))->GetString()).Atof();
+    thresholds.push_back(thresholdCaloJet);
+    thresholds.push_back(thresholdCaloMET);
+    thresholds.push_back(thresholdMinDPhi);
+    thresholds.push_back(thresholdPFJet);
+    thresholds.push_back(thresholdPFMHT);
+    delete subStrL;
+    return true;
+  }
+  else return false;
+}
+
 // 2011-12-01 Len
 bool isCaloJetX_PFJetTrigger(TString triggerName, vector<double> &thresholds)
 {
@@ -2357,7 +2361,7 @@ void OHltTree::CheckOpenHlt(
 	static TH1F *h_PFJet1_pT=new TH1F("h_PFJet1_pT", "PF Jet1 p_T; p_T (GeV)", 100, 0., 400.);
 	static TH1F *h_PFJet2_pT=new TH1F("h_PFJet2_pT", "PF Jet2 p_T; p_T (GeV)", 100, 0., 400.);
 	static TH1F *h_PFMHT=new TH1F("h_PFMHT", "PF MHT; PF MHT (GeV)", 50, 0., 200.);
-	static TH1F *h_mindPhi=new TH1F("h_mindPhi", "min(#Delta#Phi(PFJets, MHT)); min(#Delta#Phi)", 50, 0., pi);
+	static TH1F *h_minDPhi=new TH1F("h_minDPhi", "min(#Delta#Phi(PFJets, MHT)); min(#Delta#Phi)", 50, 0., pi);
 	
 	// Efficiency histograms
 	static TH1F *h_L1ETM36wrtCaloMET_num=new TH1F("h_L1ETM36wrtCaloMET_num", "L1 ETM36 Response w.r.t. HLT Calo MET; L1 ETM (GeV)", 100, 0., 400.);
@@ -13397,93 +13401,74 @@ else if (triggerName.CompareTo("OpenHLT_Ele32_WP70_PFMT50_v1")  == 0)
     }
 
  else if (isDiCentralPFJetX_PFMHTXTrigger(triggerName, thresholds))
- {
-   if (map_L1BitOfStandardHLTPath.find(triggerName)->second==1)
-	 {
-	   if (prescaleResponse(menu, cfg, rcounter, it))
-	   {
-		   if (L1Met>30.)
-			 {
-         if  ( OpenHltNPFJetPassed(2, thresholds[0], 2.6) && OpenHltPFMHT(thresholds[1], 0.)==1)
-		     {
-		       triggerBit[it] = true;
-		     }
-			 }
-	   }
-	 }
- }
- 
-	else if (isDiCentralPFJetX_PFMHTX_dPhiXTrigger(triggerName, thresholds))
+    {
+      if (map_L1BitOfStandardHLTPath.find(triggerName)->second==1)
 	{
-		h_L1ETM->Fill(L1Met);
-		if (map_L1BitOfStandardHLTPath.find(triggerName)->second==1)
+	  if (prescaleResponse(menu, cfg, rcounter, it))
+	    {
+
+	      if  ( OpenHltNPFJetPassed(2, thresholds[0], 2.6) && OpenHltPFMHT(thresholds[1], 0.)==1)
+		  
+		{
+		  triggerBit[it] = true;
+		}
+	    }
+	}
+    }
+
+  else if (isDiCentralCaloJetA_CaloMETB_minDPhiC_DiCentralPFJetD_PFMHTE_Trigger(triggerName, thresholds))
+  {
+    if (map_L1BitOfStandardHLTPath.find(triggerName)->second==1)
     {
       if (prescaleResponse(menu, cfg, rcounter, it))
       {
-				if (L1Met>36.)
-				{
-					h_CaloMET->Fill(recoMetCal);
-					if (recoMetCal>50.)
-					{
-						h_PFMHT->Fill(return_pfMHT());
-						if (OpenHltPFMHT(thresholds[1], 0.))
-						{
-							h_CaloJet1_pT->Fill(ohJetCalPt[0]);
-							h_CaloJet2_pT->Fill(ohJetCalPt[1]);
-						  if (OpenHltNJetPassed(2, 20., 2.6))
-						  {
-					      h_PFJet1_pT->Fill(pfJetPt[0]);
-					      h_PFJet2_pT->Fill(pfJetPt[1]);
-					      if (OpenHltNPFJetPassed(2, thresholds[0], 2.6))
-					      {
-							    double mindPhi=minDeltaPhiMHTJets();
-							    h_mindPhi->Fill(mindPhi);
-							    if (mindPhi>(thresholds[2])*(pi/8.))
-							    {
-								    triggerBit[it]=true;
-							    } // min(dPhi)
-						    } // DiCentralPFJet30
-					    } // DiCentralJet20
-				    } // PFMHT>80
-			    } // CaloMET>80
-		    } // L1_ETM36
-				
-				// Efficiency plots
-				if (true) // Introduce L1 pass through for unbiasing && maybe some offline cuts
-				{
-					h_CaloMET80wrtPFMHT_den->Fill(return_pfMHT());
-					if (recoMetCal>50.)
-					{
-						if (L1Met>36.)
-						{
-							h_CaloMET80wrtPFMHT_num->Fill(return_pfMHT());
-						}
-					}
-					h_L1ETM36wrtCaloMET_den->Fill(recoMetCal);
-					if (L1Met>36.)
-					{
-						h_L1ETM36wrtCaloMET_num->Fill(recoMetCal);
-					}
-					
-					// 2D correlation plot between CaloJet and PFJet pT with dR matching
-					for (unsigned int i=0; i<NohJetCorCal; ++i)
-					{
-						TVector3 caloJet;
-						caloJet.SetPtEtaPhi(ohJetCorCalPt[i], ohJetCorCalEta[i], ohJetCorCalPhi[i]);
-						for (unsigned int j=0; j<NohPFJet; ++j)
-						{
-							TVector3 pfJet;
-							pfJet.SetPtEtaPhi(pfJetPt[j], pfJetEta[j], pfJetPhi[j]);
-							if (caloJet.DeltaR(pfJet)<0.1)
-							{
-								h_CaloJet_PFJet->Fill(ohJetCorCalPt[i], pfJetPt[j]);
-							}
-						}
-					}
-				}
+        h_L1ETM->Fill(L1Met);
+        if (L1Met>36. || L1Met>40.)
+	{
+	  h_CaloMET->Fill(recoMetCal);
+	  if (recoMetCal>thresholds[0])
+	  {
+	    h_CaloJet1_pT->Fill(ohJetCorCalPt[0]);
+	    h_CaloJet2_pT->Fill(ohJetCorCalPt[1]);
+	    if (OpenHltNJetPassed(2, thresholds[1], 2.6))
+	    {
+	      double minDPhi=minDeltaPhiCaloMHTCaloJets();
+	      h_minDPhi->Fill(minDPhi);
+	      if (minDPhi>(thresholds[2]*(pi/8.)))
+	      {
+	        h_PFJet1_pT->Fill(pfJetPt[0]);
+		h_PFJet2_pT->Fill(pfJetPt[1]);
+		h_PFMHT->Fill(returnPFMHT());
+		if (OpenHltNPFJetPassed(2, thresholds[3], 2.6) && returnPFMHT()>thresholds[4])
+		{
+		  triggerBit[it]=true;
+		} // DiCentralPFJet && PFMHT
+	      } // min(dPhi(CaloJets, MET)) > pi/8
+	    } // DiCentralCaloJet
+	  } // CaloMET
+	  
+	  // Efficiency and other plots
+	  // A 2D plot between matched CaloJets and PFJets
+	  for (int i=0; i<NohJetCorCal; ++i)
+          {
+            TVector3 caloJet;
+	    caloJet.SetPtEtaPhi(ohJetCorCalPt[i], ohJetCorCalEta[i], ohJetCorCalPhi[i]);
+	    for (int j=0; j<NohPFJet; ++j)
+	    {
+	      TVector3 pfJet;
+	      pfJet.SetPtEtaPhi(pfJetPt[j], pfJetEta[j], pfJetPhi[j]);
+	      if (caloJet.DeltaR(pfJet)<0.1)
+	      {
+	        h_CaloJet_PFJet->Fill(ohJetCorCalPt[i], pfJetPt[j]);
+	      }
 	    }
-		}
-	}
+	  }
+	  
+	} // L1 Seed
+      }
+    }
+  }
+
   else if (isCaloJetX_PFJetTrigger(triggerName, thresholds))
   {
     if (map_L1BitOfStandardHLTPath.find(triggerName)->second==1)
@@ -15766,25 +15751,24 @@ else if (triggerName.CompareTo("OpenHLT_Ele32_WP70_PFMT50_v1")  == 0)
 	     << endl;
       nMissingTriggerWarnings++;
     }
-	
-	// std::cout<<"nEntries="<<h_mindPhi->GetEntries()<<std::endl;
-	
-	TFile *outFile=new TFile("Distributions.root", "recreate");
-	outFile->cd();
-	h_L1ETM->Write();
-	h_CaloMET->Write();
-	h_CaloJet1_pT->Write();
-	h_CaloJet2_pT->Write();
-	h_PFJet1_pT->Write();
-	h_PFJet2_pT->Write();
-	h_PFMHT->Write();
-  h_mindPhi->Write();
-	h_L1ETM36wrtCaloMET_num->Write();
-	h_L1ETM36wrtCaloMET_den->Write();
-	h_CaloMET80wrtPFMHT_num->Write();
-	h_CaloMET80wrtPFMHT_den->Write();
-	h_CaloJet_PFJet->Write();
-	outFile->Close();
+    
+    TFile *outFile=new TFile("HLTDistributions.root", "recreate");
+    outFile->cd();
+    h_L1ETM->Write();
+    h_CaloMET->Write();
+    h_CaloJet1_pT->Write();
+    h_CaloJet2_pT->Write();
+    h_PFJet1_pT->Write();
+    h_PFJet2_pT->Write();
+    h_PFMHT->Write();
+    h_minDPhi->Write();
+    h_L1ETM36wrtCaloMET_num->Write();
+    h_L1ETM36wrtCaloMET_den->Write();
+    h_CaloMET80wrtPFMHT_num->Write();
+    h_CaloMET80wrtPFMHT_den->Write();
+    h_CaloJet_PFJet->Write();
+    outFile->Close();
+    
 }
 
 // functions
@@ -20936,13 +20920,13 @@ int OHltTree::OpenHltPFMHT(double PFMHTthreshold, double jetthreshold, double et
   int rc = 0;
   double mhtx=0., mhty=0.;
   for (int i=0; i<NohPFJet; ++i)
-  {
-    if (pfJetPt[i] >= jetthreshold && fabs(pfJetEta[i]) < etathreshold)
-	  {
-	    mhtx-=pfJetPt[i]*cos(pfJetPhi[i]);
-	    mhty-=pfJetPt[i]*sin(pfJetPhi[i]);
-	  }
-  }
+    {
+      if (pfJetPt[i] >= jetthreshold && fabs(pfJetEta[i]) < etathreshold)
+	{
+	  mhtx-=pfJetPt[i]*cos(pfJetPhi[i]);
+	  mhty-=pfJetPt[i]*sin(pfJetPhi[i]);
+	}
+    }
   if (sqrt(mhtx*mhtx+mhty*mhty)>PFMHTthreshold)
     rc = 1;
   else
@@ -22827,7 +22811,7 @@ bool OHltTree::OpenHltNPFJetPassed(const int N, const double& pt, const double& 
     Int_t Npass= 0;
     for (int i= 0; i < NohPFJet; ++i)
     {
-      if (pfJetPt[i] >= pt && fabs(pfJetEta[i]) < eta) 
+      if (pfJetPt[i] >= pt && abs(pfJetEta[i]) < eta) 
 	Npass++;
       if (Npass >= N)
 	break;
@@ -22837,23 +22821,23 @@ bool OHltTree::OpenHltNPFJetPassed(const int N, const double& pt, const double& 
 
 bool OHltTree::OpenHltNJetPassed(const int N, const double& pt, const double& eta)
 {
-	Int_t Npass= 0;
-  for (int i= 0; i < NohJetCal; ++i)
+  Int_t Npass= 0;
+  for (int i= 0; i<NohJetCorCal; ++i)
   {
-    if (ohJetCalPt[i]>=pt && fabs(ohJetCalEta[i])<eta) Npass++;
-    if (Npass >= N)	break;
+    if (ohJetCorCalPt[i]>=pt && fabs(ohJetCorCalEta[i])<eta) Npass++;
+    if (Npass >= N) break;
   }
   return Npass >= N;
 }
 
 bool OHltTree::OpenHltNTowerEtPassed(int N, const double& Et)
 {
-  Int_t NpassEt=0;
-  for (int i= 0; i < NrecoTowCal; ++i)
-  {
-      if (recoTowEt[i] >= Et) NpassEt++;
-  }
-  return NpassEt >= N;
+    Int_t NpassEt= 0;
+    for (int i= 0; i < NrecoTowCal; ++i)
+    {
+        if (recoTowEt[i] >= Et) NpassEt++;
+    }
+    return NpassEt >= N;
 }
 
 
@@ -22934,42 +22918,64 @@ bool OHltTree::OpenHltInvMassCutEleMu(int nEle, int nMu, const float& invMassCut
 
 double OHltTree::minDeltaPhiMHTJets()
 {
-	double pi=3.14159265358979;
-	
-	double mhtx=0., mhty=0.;
+  double mhtx=0., mhty=0.;
   for (int i=0; i<NohPFJet; ++i)
   {
     if (pfJetPt[i]>=0. && fabs(pfJetEta[i])<999.)
-	  {
-	    mhtx-=pfJetPt[i]*cos(pfJetPhi[i]);
-	    mhty-=pfJetPt[i]*sin(pfJetPhi[i]);
-	  }
+    {
+      mhtx-=pfJetPt[i]*cos(pfJetPhi[i]);
+      mhty-=pfJetPt[i]*sin(pfJetPhi[i]);
+    }
   }
-	double pfMHTPhi=atan2(mhty, mhtx);
+  double pfMHTPhi=atan2(mhty, mhtx);
 	
-	double mindPhi=10.;
-	for (int i=0; i<NohPFJet; ++i)
-	{
-		if (pfJetPt[i]>=20. && fabs(pfJetEta[i])<2.6)
-		{
-			double dPhi=fabs(OHltTree::deltaPhi(pfMHTPhi, (float)pfJetPhi[i]));
-			if (dPhi<mindPhi) mindPhi=dPhi;
-		}
-	}
-	return mindPhi;
+  double mindPhi=10.;
+  for (int i=0; i<NohPFJet; ++i)
+  {
+    if (pfJetPt[i]>=20. && fabs(pfJetEta[i])<2.6)
+    {
+      double dPhi=fabs(OHltTree::deltaPhi(pfMHTPhi, (float)pfJetPhi[i]));
+      if (dPhi<mindPhi) mindPhi=dPhi;
+    }
+  }
+  return mindPhi;
 }
 
-double OHltTree::return_pfMHT()
+double OHltTree::minDeltaPhiCaloMHTCaloJets()
 {
-	double mhtx=0., mhty=0.;
+  double mhtx=0., mhty=0.;
+  for (int i=0; i<NohJetCorCal; ++i)
+  {
+    if (ohJetCorCalPt[i]>=0. && fabs(ohJetCorCalEta[i])<999.)
+    {
+      mhtx-=ohJetCorCalPt[i]*cos(ohJetCorCalPhi[i]);
+      mhty-=ohJetCorCalPt[i]*sin(ohJetCorCalPhi[i]);
+    }
+  }
+  double caloMHTPhi=atan2(mhty, mhtx);
+  
+  double mindPhi=10.;
+  for (int i=0; i<NohJetCorCal; ++i)
+  {
+    if (ohJetCorCalPt[i]>20. && fabs(ohJetCorCalEta[i])<5.0)
+    {
+      double dPhi=fabs(OHltTree::deltaPhi(caloMHTPhi, (float)ohJetCorCalPhi[i]));
+      if (dPhi<mindPhi) mindPhi=dPhi;
+    }
+  }
+  return mindPhi;
+}
+
+double OHltTree::returnPFMHT()
+{
+  double mhtx=0., mhty=0.;
   for (int i=0; i<NohPFJet; ++i)
   {
     if (pfJetPt[i]>=0. && fabs(pfJetEta[i])<999.)
-	  {
-	    mhtx-=pfJetPt[i]*cos(pfJetPhi[i]);
-	    mhty-=pfJetPt[i]*sin(pfJetPhi[i]);
-	  }
+    {
+      mhtx-=pfJetPt[i]*cos(pfJetPhi[i]);
+      mhty-=pfJetPt[i]*sin(pfJetPhi[i]);
+    }
   }
-	return sqrt(mhtx*mhtx+mhty*mhty);
+  return sqrt(mhtx*mhtx+mhty*mhty);
 }
-

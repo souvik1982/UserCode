@@ -120,7 +120,7 @@ void Significance_Kinematic(std::string filename="Histograms_glugluToX700ToHHTob
   
   // Normalize data control region shape with numbers from signal region to pretend it is the signal region
   TH1F *h_mjjjj_3Tag_SR_pretend=(TH1F*)h_mjjjj_3Tag_CR24->Clone("h_mjjjj_3Tag_SR_pretend");
-  h_mjjjj_3Tag_SR_pretend->Scale(h_mjjjj_3Tag_SR->GetSumOfWeights()/h_mjjjj_3Tag_CR24->GetSumOfWeights());
+  h_mjjjj_3Tag_SR_pretend->Scale(158.459/h_mjjjj_3Tag_CR24->GetSumOfWeights());
   h_mjjjj_3Tag_SR_pretend->SetLineColor(kBlack);
   
   // Calculate nSignal events given production cross section, branching fractions and efficiency

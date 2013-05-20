@@ -15,7 +15,9 @@
 #include <stdio.h>
 #include <TMath.h>
 
-#include "/Users/souvik/HbbHbb/Analysis/bJetRegression/HelperFunctions.h"
+#include "/uscms_data/d2/souvik/HbbHbb/CMSSW_5_3_3_patch2/src/Analysis/HelperFunctions.h"
+
+#include "/uscms_data/d2/souvik/HbbHbb/CMSSW_5_3_3_patch2/src/Analysis/kinFit4b.h"
 
 double sigmaJECUnc=0; // (-1, 0, 1)
 double sigmaJERUnc=0; // (-1, 0, 1)
@@ -201,10 +203,12 @@ int withinRegion(double mH1, double mH2, double r1=15., double r2=30., double mH
 }
  
 
-int HbbHbb_Partitioning(std::string sample, double h_mass, std::string PUWeight="")
+int HbbHbb_Partitioning(std::string sample, double h_mass, int kinConstraint=0, std::string PUWeight="")
 {
   H_mass=h_mass;
   std::cout<<"H mass set at "<<H_mass<<std::endl;
+	
+	// gSystem->Load("libPhysicsToolsKinFitter.so");
   
   std::string inputfilename="../OfficialStep2_KinematicallySelected_bTagged_"+sample+".root";
   TChain *tree=new TChain("tree");
@@ -215,8 +219,8 @@ int HbbHbb_Partitioning(std::string sample, double h_mass, std::string PUWeight=
   TH1F *h_PUWeight;
   if (PUWeight!="")
   {
-    file_PUWeight=new TFile("/Users/souvik/HbbHbb/Analysis/PUWeight.root");
-    std::cout<<"Opened PU weight file = /Users/souvik/HbbHbb/Analysis/PUWeight.root"<<std::endl;
+    file_PUWeight=new TFile("/uscms_data/d2/souvik/HbbHbb/CMSSW_5_3_3_patch2/src/Analysis/PUWeight.root");
+    std::cout<<"Opened PU weight file = /uscms_data/d2/souvik/HbbHbb/CMSSW_5_3_3_patch2/src/Analysis/PUWeight.root"<<std::endl;
     h_PUWeight=(TH1F*)gDirectory->Get("h_PUWeight");
   }
   
@@ -278,6 +282,8 @@ int HbbHbb_Partitioning(std::string sample, double h_mass, std::string PUWeight=
   TH1F *h_mX_CR4=new TH1F("h_mX_CR4", "h_mX_CR4", 100, 0., 2000.); h_mX_CR4->Sumw2();
   TH1F *h_mX_CR5=new TH1F("h_mX_CR5", "h_mX_CR5", 100, 0., 2000.); h_mX_CR5->Sumw2();
   TH1F *h_mX_SR=new TH1F("h_mX_SR", "h_mX_SR", 100, 0., 2000.); h_mX_SR->Sumw2();
+	
+	TH1F *h_mX_SR_chi2=new TH1F("h_mX_SR_chi2", "h_mX_SR_chi2", 100, 0., 2000.); h_mX_SR_chi2->Sumw2();
   
   std::string histfilename="Histograms_"+sample+".root";
   gSystem->Exec(("cp ../"+histfilename+" "+histfilename).c_str());
@@ -370,6 +376,13 @@ int HbbHbb_Partitioning(std::string sample, double h_mass, std::string PUWeight=
     double H1_mass=H1_p4.M();
     double H2_mass=H2_p4.M();
     double X_mass=X_p4.M();
+		
+		// Put in kinematic constraining here
+		if (kinConstraint==1)
+		{
+			TLorentzVector X_chi2_p4=H4b::Xchi2(jet1_p4, jet2_p4, jet3_p4, jet4_p4, H_mass);
+			X_mass=X_chi2_p4.M();
+		}
     
     int region=withinRegion(H1_mass, H2_mass, 15., 35., H_mass, H_mass);
     if (region==0) // SR                                                  
@@ -379,15 +392,15 @@ int HbbHbb_Partitioning(std::string sample, double h_mass, std::string PUWeight=
     }                                                                     
     else if (region==1) // CR1                                            
     {                                                                     
-      h_mX_CR1->Fill(X_mass, weightPU);                           
+      h_mX_CR1->Fill(X_mass, weightPU);                          
     }                                                                     
     else if (region==2) // CR2                                            
     {                                                                     
-      h_mX_CR2->Fill(X_mass, weightPU);                           
+      h_mX_CR2->Fill(X_mass, weightPU);                          
     }                                                                     
     else if (region==3) // CR3                                            
     {                                                                     
-      h_mX_CR3->Fill(X_mass, weightPU);                           
+      h_mX_CR3->Fill(X_mass, weightPU);                          
     }                                                                     
     else if (region==4) // CR4                                            
     {                                                                     
@@ -416,6 +429,7 @@ int HbbHbb_Partitioning(std::string sample, double h_mass, std::string PUWeight=
   h_mX_CR4->Write();
   h_mX_CR5->Write();
   h_mX_SR->Write();
+	h_mX_SR_chi2->Write();
   h_Cuts.Write();
   tFile2->Write();
   tFile2->Close();

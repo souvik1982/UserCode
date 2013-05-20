@@ -116,7 +116,7 @@ int SignalShapeFit()
   double nSignal_init=100000.;
   double totalLumi=13241.968; // /pb
   double prodXsec_1=1.; // pb
-/*
+
   TFile *glugluToX300=new TFile("Histograms_glugluToX300ToHHTobbbb_8TeV_width1MeV_FASTSIM_PU.root");
   std::cout<<"Opened Histograms_glugluToX300ToHHTobbbb_8TeV_width1MeV_FASTSIM_PU_Signal_2.root"<<std::endl;
   TH1F *h_mjjjj_3Tag_SR_300=(TH1F*)glugluToX300->Get("h_mX_SR");
@@ -236,7 +236,7 @@ int SignalShapeFit()
   std::cout<<"nSignal = "<<nSignal<<std::endl;
   c_mjjjj_3Tag_SR_700->SaveAs("c_mjjjj_3Tag_SR_700.png");
   fitSignal(h_mjjjj_3Tag_SR_700, "700");
-*/
+
   TFile *glugluToX800=new TFile("Histograms_glugluToX800ToHHTobbbb_8TeV_width1MeV_FASTSIM_PU.root");
   std::cout<<"Opened Histograms_glugluToX800ToHHTobbbb_8TeV_width1MeV_FASTSIM_PU.root"<<std::endl;
   TH1F *h_mjjjj_3Tag_SR_800=(TH1F*)glugluToX800->Get("h_mX_SR");

@@ -15,9 +15,9 @@
 #include <stdio.h>
 #include <TMath.h>
 
-#include "/uscms_data/d2/souvik/HbbHbb/CMSSW_5_3_3_patch2/src/Analysis/HelperFunctions.h"
+#include "/gpfs/ddn/cms/user/cvernier/H4b/CMSSW_5_3_3_patch2/src/UserCode/SouvikDas/HbbHbb/Analysis/bJetRegression/HelperFunctions.h"
 
-#include "/uscms_data/d2/souvik/HbbHbb/CMSSW_5_3_3_patch2/src/Analysis/kinFit4b.h"
+#include "/gpfs/ddn/cms/user/cvernier/H4b/CMSSW_5_3_3_patch2/src/UserCode/SouvikDas/HbbHbb/Analysis/kinFit4b.h"
 
 double sigmaJECUnc=0; // (-1, 0, 1)
 double sigmaJERUnc=0; // (-1, 0, 1)
@@ -208,9 +208,9 @@ int HbbHbb_Partitioning(std::string sample, double h_mass, int kinConstraint=0, 
   H_mass=h_mass;
   std::cout<<"H mass set at "<<H_mass<<std::endl;
 	
-	// gSystem->Load("libPhysicsToolsKinFitter.so");
-  
-  std::string inputfilename="../OfficialStep2_KinematicallySelected_bTagged_"+sample+".root";
+	 gSystem->Load("libPhysicsToolsKinFitter.so");
+ 	gSystem->Load("/gpfs/ddn/cms/user/cvernier/H4b/CMSSW_5_3_3_patch2/src/UserCode/SouvikDas/HbbHbb/Analysis/kinFit4b_h.so"); 
+  std::string inputfilename="../"+sample+"_selected_bTagged_.root";//"../OfficialStep2_KinematicallySelected_bTagged_"+sample+".root";
   TChain *tree=new TChain("tree");
   tree->Add(inputfilename.c_str());
   std::cout<<"Opened input file "<<inputfilename<<std::endl;
@@ -376,11 +376,11 @@ int HbbHbb_Partitioning(std::string sample, double h_mass, int kinConstraint=0, 
     double H1_mass=H1_p4.M();
     double H2_mass=H2_p4.M();
     double X_mass=X_p4.M();
-		
+    double chi2=0; 		
 		// Put in kinematic constraining here
 		if (kinConstraint==1)
 		{
-			TLorentzVector X_chi2_p4=H4b::Xchi2(jet1_p4, jet2_p4, jet3_p4, jet4_p4, H_mass);
+			TLorentzVector X_chi2_p4=H4b::Xchi2(jet1_p4, jet2_p4, jet3_p4, jet4_p4, chi2, H_mass);
 			X_mass=X_chi2_p4.M();
 		}
     
